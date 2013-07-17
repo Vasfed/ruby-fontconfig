@@ -96,6 +96,8 @@ static VALUE rb_pattern_add(int argc, VALUE *argv, VALUE self){
     case T_TRUE: val.type = FcTypeBool; val.u.b = 1; break;
     case T_FALSE: val.type = FcTypeBool; val.u.b = 0; break;
     case T_OBJECT:
+    case T_DATA:
+      
       //TODO: increment object references?
       // ...
       //  FcTypeMatrix: //    m               FcMatrix *
