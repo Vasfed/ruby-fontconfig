@@ -143,7 +143,7 @@ static VALUE rb_pattern_get(VALUE self, VALUE object, VALUE id){
   FcResult res = FcPatternGet(PATTERN_UNWRAP(self), RSTRING_PTR(object), FIX2INT(id), &val);
   if(res == FcResultMatch){
     VALUE r_res = fc_value_to_value(&val);
-    // FcValueDestroy(val); // gives malloc error
+    // no need to free, ptr to internal mem
     return r_res;
   }
   if(res == FcResultNoMatch || res == FcResultNoId){
