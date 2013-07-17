@@ -14,7 +14,7 @@ static const rb_data_type_t Fc_Pattern_data_type = {
     "FcPattern", 0, fc_pattern_free, fc_pattern_memsize,
 };
 
-static VALUE pattern_wrap(FcPattern* p){
+VALUE pattern_wrap(FcPattern* p){
   return TypedData_Wrap_Struct(rb_cFcPattern, &Fc_Pattern_data_type, p);
 }
 
