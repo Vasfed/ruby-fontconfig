@@ -312,6 +312,18 @@ static VALUE rb_config_get_application_fonts(VALUE self){
   return config_get_fonts(self, FcSetApplication);
 }
 
+// FcFontSort -- Return list of matching fonts
+static VALUE rb_config_font_sort(int argc, VALUE *argv, VALUE self){
+  VALUE pattern, trim;
+  rb_scan_args(argc, argv, "11", &pattern, &trim);
+  //charset - ignored.
+  if(!RTEST(pattern) || !is_fc_pattern(pattern)){
+    rb_raise(rb_eArgError, "pattern must be Fonconfig::Pattern");
+  }
+  FcResult res;
+  FcFontSet* set = FcFontSort(CONFIG_UNWRAP(self), pattern_unwrap(pattern), RTEST(trim), 0, &res);
+  return font_set_wrap(set);
+}
 
 void Init_fontconfig_config(){
   rb_cFcConfig = rb_define_class_under(rb_cFontconfig, "Config", rb_cObject);
@@ -348,10 +360,7 @@ void Init_fontconfig_config(){
   symScan = ID2SYM(rb_intern("scan"));
   rb_define_method(rb_cFcConfig, "substitute", rb_config_substitute, -1);
   rb_define_method(rb_cFcConfig, "substitute_with_pat", rb_config_substitute_with_pat, -1);
-
+  rb_define_method(rb_cFcConfig, "font_sort", rb_config_font_sort, -1);
 
 // FcConfigGetBlanks -- Get config blanks
-// FcFontSort -- Return list of matching fonts
-
-// FcConfigGetCache -- DEPRECATED used to return per-user cache filename
 }
