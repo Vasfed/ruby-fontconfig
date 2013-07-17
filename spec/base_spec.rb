@@ -1,5 +1,3 @@
-require 'bundler/setup'
-
 require 'minitest/autorun'
 require 'fontconfig'
 
@@ -10,5 +8,9 @@ describe Fontconfig do
     subject.wont_be_nil
   end
 
+  it "version" do
+    # puts "Lib version #{subject.library_version}"
+    subject.library_version.must_be :>, 0
+  end
 
 end

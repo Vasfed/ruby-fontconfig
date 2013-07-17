@@ -12,6 +12,10 @@ Rake::TestTask.new(:test) do |t|
 end
 
 
-task :test => :compile
+task :bundler do
+  require 'bundler/setup'
+end
+
+task :test => [:compile, :bundler]
 
 task :default => :test
