@@ -96,7 +96,7 @@ static VALUE rb_pattern_add(int argc, VALUE *argv, VALUE self){
     case T_TRUE: val.type = FcTypeBool; val.u.b = 1; break;
     case T_FALSE: val.type = FcTypeBool; val.u.b = 0; break;
     case T_OBJECT:
-      //TODO:
+      //TODO: increment object references?
       // ...
       //  FcTypeMatrix: //    m               FcMatrix *
       //  FcTypeCharSet: //   c               FcCharSet *
@@ -114,6 +114,7 @@ static VALUE rb_pattern_add(int argc, VALUE *argv, VALUE self){
 }
 
 static VALUE fc_value_to_value(FcValue* val){
+  //FcTypeString, FcTypeMatrix and FcTypeCharSet reference memory, need FcValueDestroy or so
   switch(val->type){
     case FcTypeVoid: return Qnil;
     case FcTypeInteger: return INT2FIX(val->u.i);
@@ -141,7 +142,9 @@ static VALUE rb_pattern_get(VALUE self, VALUE object, VALUE id){
   FcValue val;
   FcResult res = FcPatternGet(PATTERN_UNWRAP(self), RSTRING_PTR(object), FIX2INT(id), &val);
   if(res == FcResultMatch){
-    return fc_value_to_value(&val);
+    VALUE r_res = fc_value_to_value(&val);
+    // FcValueDestroy(val); // gives malloc error
+    return r_res;
   }
   if(res == FcResultNoMatch || res == FcResultNoId){
     //raise?

@@ -10,11 +10,15 @@ static VALUE rb_fc_version(VALUE self){
 
 
 void Init_fontconfig_pattern();
+void Init_fontconfig_objectset();
+void Init_fontconfig_fontset();
 void Init_fontconfig_config();
 
 void Init_fontconfig(){
   rb_cFontconfig = rb_define_module("Fontconfig");
   rb_define_singleton_method(rb_cFontconfig, "library_version", rb_fc_version, 0);
   Init_fontconfig_pattern();
+  Init_fontconfig_objectset();
+  Init_fontconfig_fontset();
   Init_fontconfig_config();
 }

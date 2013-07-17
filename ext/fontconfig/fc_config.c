@@ -276,6 +276,43 @@ static VALUE rb_config_substitute_with_pat(int argc, VALUE *argv, VALUE self){
   return BOOL2VAL(FcConfigSubstituteWithPat(CONFIG_UNWRAP(self), RTYPEDDATA_DATA(pattern), pat_pat, kind));
 }
 
+// FcFontList -- List fonts
+static VALUE rb_config_font_list(int argc, VALUE *argv, VALUE self){
+  // FcPattern *p, FcObjectSet *os(optional)
+  VALUE pattern, object_set;
+  FcObjectSet* os = 0;
+  rb_scan_args(argc, argv, "11", &pattern, &object_set);
+  if(!is_fc_pattern(pattern)){
+    rb_raise(rb_eArgError, "argument must be Fontconfig::Pattern");
+  }
+  if(object_set){
+    if(is_FcObjectSet(object_set)){
+      os = RTYPEDDATA_DATA(object_set);
+    } else {
+      //TODO: convert array to os?
+      rb_raise(rb_eArgError, "os must be Fontconfig::ObjectSet");
+    }
+  }
+  FcFontSet* set = FcFontList(CONFIG_UNWRAP(self), RTYPEDDATA_DATA(pattern), os);
+
+  return self;
+}
+
+// FcConfigGetFonts -- Get config font set
+static VALUE config_get_fonts(VALUE self, FcSetName set_name){
+  FcFontSet* set = FcConfigGetFonts(CONFIG_UNWRAP(self), set_name);
+
+}
+
+static VALUE rb_config_get_system_fonts(VALUE self){
+  return config_get_fonts(self, FcSetSystem);
+}
+
+static VALUE rb_config_get_application_fonts(VALUE self){
+  return config_get_fonts(self, FcSetApplication);
+}
+
+
 void Init_fontconfig_config(){
   rb_cFcConfig = rb_define_class_under(rb_cFontconfig, "Config", rb_cObject);
   rb_define_singleton_method(rb_cFcConfig, "new", rb_config_new, -1);
@@ -313,10 +350,8 @@ void Init_fontconfig_config(){
   rb_define_method(rb_cFcConfig, "substitute_with_pat", rb_config_substitute_with_pat, -1);
 
 
-// FcFontList -- List fonts
-// FcFontSort -- Return list of matching fonts
-// FcConfigGetFonts -- Get config font set
 // FcConfigGetBlanks -- Get config blanks
+// FcFontSort -- Return list of matching fonts
 
 // FcConfigGetCache -- DEPRECATED used to return per-user cache filename
 }

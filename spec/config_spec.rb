@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require 'fontconfig'
+require 'test_helper'
 
 describe Fontconfig::Config do
   describe "class methods" do
