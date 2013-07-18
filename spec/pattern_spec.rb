@@ -46,6 +46,42 @@ describe Fontconfig::Pattern do
       subject["familylang"][0].must_equal "en"
     end
 
+    describe "advanced" do
+      let(:key_type){ String }
+
+      it "each_key" do
+        n = 0
+        subject.each_key{|k|
+          k.must_be_kind_of key_type
+          n+=1
+        }
+        n.must_be :>, 0
+      end
+
+      it "each is each_key" do
+        subject.each{|k|
+        }
+        subject.to_a.sort.must_equal subject.keys.sort
+      end
+
+      it "keys" do
+        keys = subject.keys
+        keys.must_be_kind_of Array
+        keys.size.must_be :>,0
+        keys.each{|k|
+          k.must_be_kind_of key_type
+        }
+      end
+
+      it "each value for key" do
+        n = 0
+        subject.each_value("family"){|k|
+          n+=1
+        }
+        n.must_be :>, 0
+      end
+    end
+
   end
 
 end

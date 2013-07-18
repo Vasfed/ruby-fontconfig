@@ -174,10 +174,52 @@ static VALUE rb_pattern_remove(VALUE self, VALUE object, VALUE id){
   return res? Qtrue : Qfalse;
 }
 
-rb_pattern_default_substitute(VALUE self){
+static VALUE rb_pattern_default_substitute(VALUE self){
   FcDefaultSubstitute(PATTERN_UNWRAP(self));
   return self;
 }
+
+
+#include "fc_internal.h"
+
+static VALUE rb_pattern_each_key(VALUE self){
+  FcPattern* p = PATTERN_UNWRAP(self);
+  int i;
+  FcPatternElt* e;
+  for (i = 0; i < p->num; i++){
+    e = &FcPatternElts(p)[i];
+    //FIXME: return as symbols?
+    rb_yield(rb_str_new2(FcObjectName(e->object)));
+  }
+  return self;
+}
+
+static VALUE rb_pattern_get_keys(VALUE self){
+  FcPattern* p = PATTERN_UNWRAP(self);
+  VALUE res = rb_ary_new();
+  int i;
+  FcPatternElt* e;
+  for (i = 0; i < p->num; i++){
+    e = &FcPatternElts(p)[i];
+    rb_ary_push(res, rb_str_new2(FcObjectName(e->object)));
+    // FcValueListPrint (FcPatternEltValues(e));
+  }
+  return res;
+}
+
+static VALUE rb_pattern_each_key_value(VALUE self, VALUE key){
+  FcPattern* p = PATTERN_UNWRAP(self);
+  FcPatternElt* e = FcPatternObjectFindElt(p, FcObjectFromName (StringValuePtr(key)));
+  FcValueListPtr l;
+  if(e){
+    for (l = FcPatternEltValues(e); l; l = FcValueListNext(l)){
+      // FcValueCanonicalize(&l->value); - re allocates value pointers, do not need this
+      rb_yield(fc_value_to_value(&l->value));
+    }
+  }
+  return self;
+}
+
 
 
 void Init_fontconfig_pattern(){
@@ -200,5 +242,9 @@ void Init_fontconfig_pattern(){
   rb_define_method(rb_cFcPattern, "format", rb_pattern_format, 1);
   rb_define_method(rb_cFcPattern, "debug_print", rb_pattern_debugprint, 0);
   rb_define_method(rb_cFcPattern, "default_substitute!", rb_pattern_default_substitute, 0);
+
+  rb_define_method(rb_cFcPattern, "keys", rb_pattern_get_keys, 0);
+  rb_define_method(rb_cFcPattern, "each_key", rb_pattern_each_key, 0);
+  rb_define_method(rb_cFcPattern, "each_value", rb_pattern_each_key_value, 1);
 
 }

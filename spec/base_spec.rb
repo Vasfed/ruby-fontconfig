@@ -13,4 +13,8 @@ describe Fontconfig do
     subject.library_version.must_be :>, 0
   end
 
+  it "current_config" do
+    subject.current_config.must_be_instance_of Fontconfig::Config
+  end
+
 end

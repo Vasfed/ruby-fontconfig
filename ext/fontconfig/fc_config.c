@@ -330,6 +330,7 @@ void Init_fontconfig_config(){
   rb_define_singleton_method(rb_cFcConfig, "new", rb_config_new, -1);
   rb_define_method(rb_cFcConfig, "parse_and_load", rb_config_parse_and_load, -1);
   rb_define_singleton_method(rb_cFcConfig, "filename", rb_config_filename, 1);
+  rb_define_singleton_method(rb_cFontconfig, "current_config", rb_config_get_current, 0);
   rb_define_singleton_method(rb_cFcConfig, "get_current", rb_config_get_current, 0);
   rb_define_method(rb_cFcConfig, "set_current!", rb_config_set_current, 0);
   rb_define_method(rb_cFcConfig, "up_to_date?", rb_config_up_to_date_p, 0);
