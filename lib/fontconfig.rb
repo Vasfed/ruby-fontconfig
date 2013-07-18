@@ -32,7 +32,9 @@ module Fontconfig
     end
 
     def [](key)
-      return Proxy.new(self, key.to_s)
+      key = key.to_s
+      return nil unless has_key?(key)
+      return Proxy.new(self, key)
     end
 
     def inspect
@@ -49,6 +51,22 @@ module Fontconfig
       end
       self
     end
+
+    def prepare! config=Fontconfig.current_config, kind=:font
+      @prepared = true
+      config_substitute! config, kind
+      default_substitute!
+      self
+    end
+
+    def match config=Fontconfig.current_config
+      raise "unprepared pattern match" unless @prepared
+      config.font_match self
+    end
+
+    def filename
+      self[:filename].first
+    end
   end
 
 
@@ -57,10 +75,7 @@ module Fontconfig
   end
 
   def self.prepared_pattern *args
-    pat = self.pattern *args
-    pat.config_substitute!
-    pat.default_substitute!
-    pat
+    self.pattern(*args).prepare!
   end
 
   def self.match *args

@@ -194,6 +194,15 @@ static VALUE rb_pattern_each_key(VALUE self){
   return self;
 }
 
+static VALUE rb_pattern_has_key_p(VALUE self, VALUE key){
+  FcPattern* p = PATTERN_UNWRAP(self);
+  FcPatternElt* e = FcPatternObjectFindElt(p, FcObjectFromName (StringValuePtr(key)));
+  if(e){
+    return Qtrue;
+  }
+  return Qfalse;
+}
+
 static VALUE rb_pattern_get_keys(VALUE self){
   FcPattern* p = PATTERN_UNWRAP(self);
   VALUE res = rb_ary_new();
@@ -246,5 +255,6 @@ void Init_fontconfig_pattern(){
   rb_define_method(rb_cFcPattern, "keys", rb_pattern_get_keys, 0);
   rb_define_method(rb_cFcPattern, "each_key", rb_pattern_each_key, 0);
   rb_define_method(rb_cFcPattern, "each_value", rb_pattern_each_key_value, 1);
+  rb_define_method(rb_cFcPattern, "has_key?", rb_pattern_has_key_p, 1);
 
 }
