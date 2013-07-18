@@ -41,5 +41,34 @@ module Fontconfig
 
     alias :each :each_key
     include Enumerable
+
+    def config_substitute! config=Fontconfig.current_config, kind=:font
+      #kind - :pattern, :font, :scan
+      unless config.substitute(self)
+        raise "cannot perform substitutions on pattern"
+      end
+      self
+    end
+  end
+
+
+  def self.pattern *args
+    Pattern.new *args
+  end
+
+  def self.prepared_pattern *args
+    pat = self.pattern *args
+    pat.config_substitute!
+    pat.default_substitute!
+    pat
+  end
+
+  def self.match *args
+    pat = if args.first.is_a? Pattern
+      args.first
+    else
+      self.prepared_pattern *args
+    end
+    current_config.font_match pat
   end
 end
